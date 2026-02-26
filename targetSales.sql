@@ -113,14 +113,17 @@ having avg(payment_value) >= 100;
 select customers.customer_id,orders.order_status 
 from customers join orders
 on customers.customer_id = orders.customer_id;
+
 select customers.customer_id,orders.order_status 
 from customers join orders
 on customers.customer_id = orders.customer_id
 where order_status = "canceled";
+
 select year(orders.order_purchase_timestamp) as years,round(sum(payments.payment_value),2) as sum_of_payments_in_year
 from orders join payments
 on orders.order_id = payments.order_id
 group by years order by years;
+
 select (products.product_category) as category,round(sum(payments.payment_value),2) as sales
 from products join order_items 
 on products.product_id = order_items.product_id
