@@ -166,9 +166,39 @@ from a;
 
 -- window function
 
-select order_date,
+select order_date,sales,
 sum(sales) over(order by order_date) from
 (select date(orders.order_purchase_timestamp) order_date, sum(payments.payment_value) sales
 from orders join payments 
 on orders.order_id = payments.order_id 
-group by order_date) as a
+group by order_date) as a;
+
+
+with a as (select (products.product_category) as category,sum(payments.payment_value) as sales
+from products join order_items 
+on products.product_id = order_items.product_id
+join payments
+on payments.order_id = order_items.order_id
+group by category)
+select category, sales, rank() over(order by sales desc)
+from a;
+
+with a as (select (products.product_category) as category,sum(payments.payment_value) as sales
+from products join order_items 
+on products.product_id = order_items.product_id
+join payments
+on payments.order_id = order_items.order_id
+group by category),
+b as (select category, sales, rank() over(order by sales desc) as rk
+from a)
+select category, sales from b where rk <= 3;
+
+-- view
+
+create view category_sales_view as 
+select (products.product_category) as category,sum(payments.payment_value) as sales
+from products join order_items 
+on products.product_id = order_items.product_id
+join payments
+on payments.order_id = order_items.order_id
+group by category;
